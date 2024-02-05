@@ -1,0 +1,48 @@
+{% extends "_base.html" %}
+
+{% block title %}Order Details{% end %}
+
+{% block main %}
+    <header class="page page--order" data-orderid="{{ order['OrderID'] }}" data-orderstatus="{{ order['Status'] }}">
+        <h1>{{ order['RestaurantName'] }} #{{ order['OrderID'] }}</h1>
+        <nav class="toolbar">
+            {% if is_own_order %}
+                {% if order['Status'] in ['PENDING'] %}
+                    <button name="action" value="order:pay">Submit Order</button>
+                {% end %}
+                {% if order['Status'] in ['PENDING', 'PAID'] %}
+                    <button name="action" value="order:cancel">Cancel Order</button>
+                {% end %}
+            {% end %}
+            {% if is_employee %}
+                {% if order['Status'] in ['PAID'] %}
+                    <button name="action" value="order:accept">Accept</button>
+                {% end %}
+                {% if order['Status'] in ['ACCEPTED'] %}
+                    <button name="action" value="order:deliver">Deliver</button>
+                {% end %}
+            {% end %}
+        </nav>
+    </header>
+    <section class="menu">
+        {% for item in order['Items'] %}
+            {% if order['Status'] in ['PENDING'] or item['Quantity'] != 0 %}
+                <div class="item">
+                    <span class="name">{{ escape(item['Name']) }}</span>
+                    {% if order['Status'] in ['PENDING'] %}
+                        <span class="price">{{ '${:.2f}'.format(item['Price'] / 100) }}</span>
+                    {% end %}
+                    {% if is_own_order and order['Status'] in ['PENDING'] %}
+                        <button name="action" value="item:{{ item['ItemID'] }}:subtract">-</button>
+                    {% end %}
+                    <span class="quantity">{{ item['Quantity'] }}</span>
+                    {% if is_own_order and order['Status'] in ['PENDING'] %}
+                        <button name="action" value="item:{{ item['ItemID'] }}:add">+</button>
+                    {% end %}
+                </div>
+            {% end %}
+        {% end %}
+    </section>
+{% end %}
+
+

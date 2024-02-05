@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+{% block title %}Log In{% end %}
+
+{% block main %}
+    <header class="page page--login">
+        <h1>Log In</h1>
+    </header>
+    <section class="auth auth--login">
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <input type="submit" value="Log In">
+        <a href="/account/create">Create Account</a>
+    </section>
+{% end %}

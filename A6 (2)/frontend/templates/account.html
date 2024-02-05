@@ -1,0 +1,30 @@
+{% extends "_base.html" %}
+{% block title %}My Account{% end %}
+{% block main %}
+    <header class="page page--account">
+        <h1>Account</h1>
+    </header>
+    <section class="account">
+        <h2>General</h2>
+        <label for="firstname">First Name</label>
+        <input type="text" class="firstname" name="firstname" id="firstname" value="{{ escape(user['FirstName']) }}">
+        <label for="lastname">Last Name</label>
+        <input type="text" class="lastname" name="lastname" id="lastname" value="{{ escape(user['LastName']) }}">
+        <label for="password">Password</label>
+        <input type="password" class="password" name="password" id="password" placeholder="New password">
+    </section>
+    <section class="account">
+        <h2>Billing Information</h2>
+        <label for="address">Address</label>
+        <input type="text" class="address" name="address" id="address" value="{{ escape(user['Address']) }}">
+        <label for="cardnumber">Card Number</label>
+        <input type="text" class="cardnumber" name="cardnumber" id="cardnumber" value="{{ user['CardNumber'] }}">
+        <label for="cardexpiry">Card Expiry</label>
+        <input type="text" class="cardexpiry" name="cardexpiry" id="cardexpiry" value="{{ escape(user['CardExpiry']) }}">
+        <label for="cardcode">Card Code</label>
+        <input type="text" class="cardcode" name="cardcode" id="cardcode" value="{{ user['CardCode'] }}">
+    </section>
+    <section class="account">
+        <input type="submit" value="Save">
+    </section>
+{% end %}

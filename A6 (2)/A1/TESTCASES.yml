@@ -1,0 +1,620 @@
+- Name: Create account
+  Objective: Allow user to create an account.
+  Arrange: Open account creation page.
+  Act: Fill in user information (username, password).
+  Assert: If the user doesn't already exist and the password is valid, the user should be created, logged in, and redirected to the account details page.
+
+  TestCases:
+  - Name: Invalid password
+    InitialState:
+      Page: /account/create
+      LoggedInUser: null
+    InputData:
+      username: john
+      password: ""
+      first_name: John
+      last_name: Smith
+    ExpectedOutput:
+      Message: "Invalid account information"
+      Page: /account/create
+
+  - Name: Invalid username
+    InitialState:
+      Page: /account/create
+      LoggedInUser: null
+    InputData:
+      username: john!
+      password: password
+      first_name: John
+      last_name: Smith
+    ExpectedOutput:
+      Message: "Invalid account information"
+      Page: /account/create
+
+  - Name: Invalid username
+    InitialState:
+      Page: /account/create
+      LoggedInUser: null
+    InputData:
+      username: "john smith"
+      password: password
+      first_name: John
+      last_name: Smith
+    ExpectedOutput:
+      Message: "Invalid account information"
+      Page: /account/create
+
+  - Name: Duplicate username
+    InitialState:
+      Page: /account/create
+      LoggedInUser: null
+    InputData:
+      username: patrick
+      password: password
+      first_name: Patrick
+      last_name: Smith
+    ExpectedOutput:
+      Message: "Username already exists"
+      Page: /account/create
+
+  - Name: Valid
+    InitialState:
+      Page: /account/create
+      LoggedInUser: null
+    InputData:
+      username: john
+      password: password
+      first_name: John
+      last_name: Smith
+    ExpectedOutput:
+      Message: "Account created"
+      Page: /account
+
+
+- Name: Modify account
+  Objective: Allow user to change account details.
+  Arrange: Open the modify account page (it will contain the existing information other than the password and card information).
+  Act: Fill in the new password, credit card (optional), and/or mailing address (optional).
+  Assert: If the information is valid (the password and card information can be empty, or be a new password), it should be updated and the user should be redirected back to the homepage.
+
+  TestCases:
+  - Name: Valid password change
+    InitialState:
+      Page: /account
+      LoggedInUser: patrick
+    InputData:
+      firstname: Patrick
+      lastname: Gaskin
+      password: password1
+      address: 123 Main St, Kingston, Ontario, Canada A1B 2C3
+      cardnumber: "2222420000001113"
+      cardexpiry: "08/26"
+      cardcode: "123"
+    ExpectedOutput:
+      Message: "Account updated"
+      Page: /account
+
+  - Name: Invalid card information change
+    InitialState:
+      Page: /account
+      LoggedInUser: patrick
+    InputData:
+      firstname: Patrick
+      lastname: Gaskin
+      password: ""
+      address: 123 Main St, Kingston, Ontario, Canada A1B 2C3
+      cardnumber: 1
+      cardexpiry: 99/99
+      cardcode: 123
+    ExpectedOutput:
+      Message: "Invalid card information"
+      Page: /account
+
+  - Name: Valid card information and password change
+    InitialState:
+      Page: /account
+      LoggedInUser: patrick
+    InputData:
+      firstname: Patrick
+      lastname: Gaskin
+      password: password1
+      address: 123 Main St, Kingston, Ontario, Canada A1B 2C3
+      cardnumber: 2223000048410010
+      cardexpiry: 09/26
+      cardcode: 123
+    ExpectedOutput:
+      Message: "Account updated"
+      Page: /account
+
+- Name: Log in
+  Objective: Authenticate a user to provide them access to the application.
+  Arrange: Open the account login page.
+  Act: Fill in login information (e.g., username, password) and click log in.
+  Assert: If the login information is valid, the user should be logged in and redirected to the homepage.
+
+  TestCases:
+  - Name: Incorrect username
+    InitialState:
+      Page: /account/login
+      LoggedInUser: null
+    InputData:
+      username: user
+      password: password
+    ExpectedOutput:
+      Message: "User does not exist"
+      Page: /account/login
+
+  - Name: Incorrect password
+    InitialState:
+      Page: /account/login
+      LoggedInUser: null
+    InputData:
+      username: patrick
+      password: dummy
+    ExpectedOutput:
+      Message: "Incorrect password"
+      Page: /account/login
+
+  - Name: Success
+    InitialState:
+      Page: /account/login
+      LoggedInUser: null
+    InputData:
+      username: patrick
+      password: password
+    ExpectedOutput:
+      Page: /restaurants
+      LoggedInUser: patrick
+
+- Name: Log out
+  Objective: Allow user to log out from the application.
+  Arrange: Open any page and click log out.
+  Act: N/A.
+  Assert: The user should be logged out and redirected to the login page.
+
+  TestCases:
+  - Name: Success
+    InitialState:
+      Page: /account/logout
+      LoggedInUser: patrick
+    ExpectedOutput:
+      LoggedInUser: null
+      Page: /restaurants
+
+
+- Name: List customer orders
+  Objective: Allow user to view orders.
+  Arrange: Open the homepage and click the orders button.
+  Act: N/A.
+  Assert: A summary (date, restaurant, total, status) of orders for the customer should be shown.
+
+  TestCases:
+  - Name: List customer orders
+    InitialState:
+      Page: /orders
+      LoggedInUser: patrick
+    ExpectedOutput:
+      VisibleOrderIDs: [2]
+
+- Name: List restaurants
+  Objective: Show all non-deleted restaurants on the app.
+  Arrange: Open the homepage.
+  Act: Click the restaurants button.
+  Assert: All non-deleted restaurants should be listed. There should also be a new restaurant button.
+
+  TestCases:
+  - Name: Display list of restaurants
+    InitialState:
+      Page: /restaurants
+      LoggedInUser: patrick
+    ExpectedOutput:
+      VisibleRestaurantIDs: [1, 2]
+
+- Name: View restaurant
+  Objective: Show restaurant information.
+  Arrange: Open the restaurants page and click on a restaurant.
+  Act: N/A.
+  Assert: Restaurant information and a preview of the menu items should be displayed. If the user is the owner, there should also be an employee list (with a remove button for each employee and a username input and add employee button), and the restaurant plus all menu items should have editable fields with a save/remove button, plus fields and a button to add a new menu item. If the user is an employee, there should be a section with all paid and accepted orders listed (not cancelled, pending, or delivered).
+
+  TestCases:
+  - Name: Customer+Owner
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    ExpectedOutput:
+      RestaurantName: My Restaurant
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+      VisibleButtons: [restaurant:order, restaurant:delete, restaurant:update , employee:new:add, employee:qays:remove, item:new:add, item:2:delete, item:2:update]
+
+  - Name: Customer+Employee
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: qays
+    ExpectedOutput:
+      RestaurantName: My Restaurant
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+      VisibleButtons: [restaurant:order, order:2:accept, order:1:deliver]
+      VisibleOrderIDs: [1, 2]
+
+  - Name: Customer
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: jeff
+    ExpectedOutput:
+      RestaurantName: My Restaurant
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+      VisibleButtons: [restaurant:order]
+
+- Name: New order
+  Objective: Allow user to create a new order.
+  Arrange: Go to a restaurant page.
+  Act: Click new order.
+  Assert: The order page for a new pending order should be displayed with a list of available menu items and the current quantity (all zero).
+
+  TestCases:
+  - Name: Valid new order
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: jeff
+    InputData:
+      action: restaurant:order
+    ExpectedOutput:
+      Page: /orders/4
+      VisibleButtons: [order:pay, order:cancel]
+
+- Name: Add/remove item in order
+  Objective: Allow user to add item to order.
+  Arrange: Open the order page for a pending order.
+  Act: Adds item to order.
+  Assert: The item quantity should be increased or decreased.
+
+  TestCases:
+  - Name: Add
+    InitialState:
+      Page: /orders/3
+      LoggedInUser: qays
+    InputData:
+      action: item:4:add
+    ExpectedOutput:
+      OrderItems:
+        - Tea=1
+        - Pop=1
+        - Water=0
+      Page: /orders/3
+
+  - Name: Remove
+    InitialState:
+      Page: /orders/3
+      LoggedInUser: qays
+    InputData:
+      action: item:2:subtract
+    ExpectedOutput:
+      OrderItems:
+        - Tea=0
+        - Pop=0
+        - Water=0
+      Page: /orders/3
+
+  - Name: Invalid
+    InitialState:
+      Page: /orders/3
+      LoggedInUser: qays
+    InputData:
+      force_action: item:6:add
+    ExpectedOutput:
+      OrderItems:
+        - Tea=1
+        - Pop=0
+        - Water=0
+      Page: /orders/3
+
+- Name: Submit order
+  Objective: Allow user to submit an order.
+  Arrange: Open the order page for a pending order.
+  Act: Press the submit order button.
+  Assert: If the user has valid payment and mailing information, all selected items are not deleted, and the payment is successful, the order state should now be submitted, and the order page should show the order status and summary instead of the available menu items.
+
+  TestCases:
+  - Name: Valid
+    InitialState:
+      Page: /orders/3
+      LoggedInUser: qays
+    InputData:
+      action: order:pay
+    ExpectedOutput:
+      Message: "Order submitted"
+      Page: /orders/3
+      VisibleButtons: [order:cancel]
+
+- Name: Cancel order
+  Objective: Allow the user to cancel an order.
+  Arrange:  Open the order page page for a paid or pending (but not accepted or delivered).
+  Act: Press the cancel order button.
+  Assert: If the order was in the paid or pending state, the order should now be in the cancelled state and the page should reflect that.
+
+  TestCases:
+  - Name: Invalid
+    InitialState:
+      Page: /orders/1
+      LoggedInUser: jeff
+    InputData:
+      force_action: order:cancel
+    ExpectedOutput:
+      Message: "Bad action"
+      Page: /orders/1
+      OrderStatus: ACCEPTED
+
+  - Name: Valid
+    InitialState:
+      Page: /orders/2
+      LoggedInUser: patrick
+    InputData:
+      action: order:cancel
+    ExpectedOutput:
+      Message: "Order cancelled"
+      Page: /orders/2
+      OrderStatus: CANCELLED
+
+  - Name: Valid
+    InitialState:
+      Page: /orders/3
+      LoggedInUser: qays
+    InputData:
+      action: order:cancel
+    ExpectedOutput:
+      Message: "Order cancelled"
+      Page: /orders/3
+      OrderStatus: CANCELLED
+
+- Name: Create restaurant
+  Objective: Allow owners to add restaurant on the app.
+  Arrange: Go to the restaurants.
+  Act: Fill in a restaurant name and press add.
+  Assert: The user should be redirected to the restaurants page, and the new restaurant should be listed.
+
+  TestCases:
+  - Name: Invalid
+    InitialState:
+      Page: /restaurants
+      LoggedInUser: jeff
+    InputData:
+      name: ""
+    ExpectedOutput:
+      Message: "must not be blank"
+      Page: /restaurants
+
+  - Name: Valid
+    InitialState:
+      Page: /restaurants
+      LoggedInUser: jeff
+    InputData:
+      name: "Test"
+    ExpectedOutput:
+      Message: "Restaurant created"
+      Page: /restaurants
+      RestaurantListContainsName: [Test]
+
+- Name: Update restaurant
+  Objective: Allow owners to update the restaurant name.
+  Arrange: Open the page of a restaurant as an owner.
+  Act: Fill in a new name and submit the page.
+  Assert: The user should be redirected back to the restaurant page, and the name should be updated.
+
+  TestCases:
+  - Name: Success
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      restaurant:name: "Best Restaurant"
+      action: restaurant:update
+    ExpectedOutput:
+      RestaurantName: "Best Restaurant"
+      Page: /restaurants/1
+
+- Name: Delete restaurant
+  Objective: Allow owners to delete the restaurant.
+  Arrange: Open the page of a restaurant as an owner.
+  Act: Press the delete button.
+  Assert: The user should be redirected back to the restaurants list, and the restaurant should no longer be present.
+
+  TestCases:
+  - Name: Success
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      action: restaurant:delete
+    ExpectedOutput:
+      Page: /restaurants
+      NotVisibleRestaurantNames: ["My Restaurant"]
+
+- Name: Add employee
+  Objective: Add new employee to restaurant.
+  Arrange: Open the page of a restaurant as an owner.
+  Act: Fill in a valid username for a new employee and press the add employee button.
+  Assert: If the username exists, the user should be redirected back to the restaurant page and the new employee should be added.
+
+  TestCases:
+  - Name: Invalid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      employee:new:username: "sdfsdf"
+      action: employee:new:add
+    ExpectedOutput:
+      Message: "user does not exist"
+      Page: /restaurants/1
+      VisibleEmployeeUsernames: ["qays"]
+
+  - Name: Valid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      employee:new:username: "jeff"
+      action: employee:new:add
+    ExpectedOutput:
+      Page: /restaurants/1
+      VisibleEmployeeUsernames: ["qays", "jeff"]
+
+- Name: Remove employee
+  Objective: Remove employee from restaurant.
+  Arrange: Open the page of a restaurant as an owner.
+  Act: Press the remove employee button beside an employee.
+  Assert: Check that employee was removed.
+
+  TestCases:
+  - Name: Success
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      action: employee:qays:remove
+    ExpectedOutput:
+      Page: /restaurants/1
+      VisibleEmployeeUsernames: []
+
+- Name: Add menu item
+  Objective: Allow owners to add menu items.
+  Arrange: Open the page of a restaurant as an owner.
+  Act: Fill in the name and price for a new menu item, and press the add item button.
+  Assert: If the information provided is valid, the user should be redirected back to the restaurant page and the item should be added to the menu.
+
+  TestCases:
+  - Name: Valid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      item:new:price: 3.75
+      item:new:name: Smoothie
+      action: item:new:add
+    ExpectedOutput:
+      Page: /restaurants/1
+      VisibleMenuItems: ["Tea", "Pop", "Water", "Smoothie"]
+
+  - Name: Invalid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      item:new:price: -3.75
+      item:new:name: dummy
+      action: item:new:add
+    ExpectedOutput:
+      Message: "invalid price"
+      Page: /restaurants/1
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+
+  - Name: Invalid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      item:new:price: one dollar
+      item:new:name: dummy
+      action: item:new:add
+    ExpectedOutput:
+      Message: "invalid price"
+      Page: /restaurants/1
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+
+  - Name: Invalid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      item:new:price: 1.00
+      item:new:name: ""
+      action: item:new:add
+    ExpectedOutput:
+      Message: "item name"
+      Page: /restaurants/1
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+
+- Name: Update menu item
+  Objective: Allow owner to update menu item names and prices.
+  Arrange: Open the page of the restaurant as an owner.
+  Act: Update the information for a menu item, and press the save button.
+  Assert: If the information provided is valid, the user should be redirected back to the restaurant page and the item should be updated.
+
+  TestCases:
+  - Name: Valid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      item:2:name: Tea (special)
+      item:2:price: 0.50
+      action: item:2:update
+    ExpectedOutput:
+      VisibleMenuItems: ["Tea (special)", "Pop", "Water"]
+      Page: /restaurants/1
+
+  - Name: Invalid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      item:2:name: ""
+      item:2:price: 1.20
+      action: item:2:update
+    ExpectedOutput:
+      Message: "item name must not be empty"
+      VisibleMenuItems: ["Tea", "Pop", "Water"]
+      Page: /restaurants/1
+
+- Name: Delete menu item
+  Objective: Allow owner to delete menu items.
+  Arrange: Open the page of the restaurant as an owner.
+  Act: Press the delete button beside a menu item.
+  Assert: Check that menu information is deleted.
+
+  TestCases:
+  - Name: Valid
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: patrick
+    InputData:
+      action: item:2:delete
+    ExpectedOutput:
+      Page: /restaurants/1
+      VisibleMenuItems: ["Pop", "Water"]
+
+- Name: Accept restaurant order
+  Objective: Allow employees to update customer orders.
+  Arrange: Open the page of the restaurant as an owner.
+  Act: Press the accept button beside a paid order.
+  Assert: The order status should change to accepted, and the deliver button should appear.
+
+  TestCases:
+  - Name: Success
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: qays
+    InputData:
+      action: order:2:accept
+    ExpectedOutput:
+      Message: "Order accepted"
+      VisibleButtons: [order:2:deliver]
+      Page: /restaurants/1
+
+- Name: Deliver restaurant order
+  Objective: Allow employees to update customer orders.
+  Arrange: Open the page of the restaurant as an owner.
+  Act: Press the deliver button beside an accepted order.
+  Assert: The order should be removed from the list.
+
+  TestCases:
+  - Name: Success
+    InitialState:
+      Page: /restaurants/1
+      LoggedInUser: qays
+    InputData:
+      action: order:1:deliver
+    ExpectedOutput:
+      Message: "Order delivered"
+      NotVisibleOrderIDs: [1]
+      Page: /restaurants/1

@@ -1,0 +1,19 @@
+{% extends "_base.html" %}
+{% block title %}My Orders{% end %}
+
+{% block main %}
+    <header class="page page--orders">
+        <h1>My Orders</h1>
+    </header>
+    <section class="orders">
+    {% for order in orders %}
+        <a href="/orders/{{ order['OrderID'] }}" data-orderid="{{ order['OrderID'] }}">
+            <div class="id">{{ order['RestaurantName'] }} #{{ order['OrderID'] }}</div>
+            <div class="status">{{ order['Status'] }}</div>
+            <div class="date">{{ order['Date'] }}</div>
+            <div class="address">{{ escape(order['Address']) }}</div>
+            <span class="total">{{ '${:.2f}'.format(order['Total'] / 100) }}</span>
+        </a>
+    {% end %}
+    </section>
+{% end %}

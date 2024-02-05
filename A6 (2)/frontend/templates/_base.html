@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Restaurant App{% end %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"> 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            font-size: 16px;
+        }
+        body {
+            font-size: 1rem;
+            font-family: 'PT Sans', sans-serif;
+        }
+        body > nav.main {
+            display: flex;
+            padding: .5rem 1rem;
+            gap: .75rem;
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        body > nav.main > .spacer {
+            flex: 1;
+        }
+        body > nav.main > a {
+            flex: 0 0 auto;
+            display: block;
+            padding: .15rem;
+            text-decoration: none;
+            font-weight: bold;
+            color: #22c;
+            border-bottom: 2px solid transparent;
+        }
+        body > nav.main > a:hover,
+        body > nav.main > a:active {
+            border-bottom-color: currentColor;
+        }
+        body > nav.main > a:active {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        body > aside.flash {
+            display: block;
+            margin: 1rem;
+            padding: .25rem;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+        body > aside.flash--info {
+            border-color: rgba(20, 20, 200, 0.2);
+            background: rgba(20, 20, 200, 0.1);
+        }
+        body > aside.flash--error {
+            border-color: rgba(200, 20, 20, 0.2);
+            background: rgba(200, 20, 20, 0.1);
+        }
+        body > main {
+            margin: 1rem;
+        }
+        body > main > form > header.page > h1 {
+            text-align: center;
+            padding: .25rem;
+            margin: 0 0 1rem;
+            font-size: 1.6em;
+        }
+        body > main > form > header.page > nav.toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: .5rem 1rem;
+            background: rgba(0, 0, 0, 0.05);
+            margin: 0 -1rem;
+            gap: .5rem;
+        }
+        body > main > form > header.page > nav.toolbar > * {
+            flex: 0 0 auto;
+        }
+        body > main > form > header.page > nav.toolbar > .spacer {
+            flex: 1;
+        }
+        body > main > form > section.auth {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            margin: 1rem auto;
+            max-width: 240px;
+            padding: 1rem;
+            gap: .5rem;
+        }
+        body > main > form > section.auth > input[type="text"],
+        body > main > form > section.auth > input[type="password"] {
+            flex: 0 0 auto;
+            min-width: 0;
+        }
+        body > main > form > section.auth > input[type="submit"] {
+            align-self: flex-end;
+        }
+        body > main > form > section.auth > a {
+            align-self: center;
+        }
+        body > main > form > section.restaurants {
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        body > main > form > section.orders {
+            margin: 1rem 0;
+        }
+        body > main > form > section.restaurants > a,
+        body > main > form > section.orders > a {
+            display: block;
+            margin: .75rem 0;
+            padding: .25rem;
+            color: inherit;
+            text-decoration: none;
+            box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+        body > main > form > section.restaurants > a:hover,
+        body > main > form > section.orders > a:hover {
+            box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.08);
+            border-color: rgba(0, 0, 0, 0.3);
+        }
+        body > main > form > section.restaurants > div,
+        body > main > form > section.orders > div {
+            background: rgba(0, 0, 0, 0.01);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            margin: .75rem 0;
+            padding: .25rem;
+            border-radius: 4px;
+        }
+        body > main > form > section.restaurants > div.new > label {
+            display: block;
+            margin-bottom: .2rem;
+        }
+        body > main > form > section.account {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            max-width: 320px;
+            margin: 1.5rem auto;
+        }
+        body > main > form > section.account > * {
+            flex: 0 0 auto;
+        }
+        body > main > form > section.account > h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.3em;
+        }
+        body > main > form > section.account > label {
+            display: block;
+            margin-top: .5rem;
+            margin-bottom: .25rem;
+        }
+        body > main > form > section.account > input[type="text"],
+        body > main > form > section.account > input[type="password"] {
+            min-width: 0;
+        }
+        body > main > form > section.account > input[type="submit"],
+        body > main > form > section.account > button {
+            align-self: center;
+        }
+        body > main > form > section.menu {
+            margin: 1rem 0;
+        }
+        body > main > form > section.menu > div.item {
+            display: flex;
+            padding: .5rem;
+            gap: .5rem;
+            background: rgba(0, 0, 0, 0.04);
+        }
+        body > main > form > section.menu > div.item:nth-of-type(even) {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        body > main > form > section.menu > div.item > * {
+            flex: 0 0 auto;
+            min-width: 0;
+        }
+        body > main > form > section.menu > div.item > .name {
+            flex: 1;
+        }
+        body > main > form > section.menu > div.item > .price {
+            max-width: 6em;
+        }
+        body > main > form > section.employees {
+            margin: 1rem 0;
+            padding: .25rem;
+        }
+        body > main > form > section.employees > .employee {
+            display: flex;
+            padding: .25rem;
+            gap: .5rem;
+        }
+        body > main > form > section.employees > .employee > * {
+            flex: 0 0 auto;
+            min-width: 0;
+        }
+        body > main > form > section.employees > .employee > .username {
+            flex: 1;
+        }
+        body > main > form > section.employees > h2,
+        body > main > form > section.menu > h2 {
+            margin: .25rem;
+            padding: 0;
+            font-size: 1.3em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="main">
+        <a href="/restaurants">Restaurants</a>
+        {% if user_info is not None %}
+            <a href="/orders">My Orders</a>
+            <a href="/account">My Account</a>
+        {% end %}
+        <span class="spacer"></span>
+        {% if user_info is not None %}
+            <a href="/account/logout">Log Out (<span data-username="{{ user_info[0] }}">{{ user_info[1] }}</span>)</a>
+        {% else %}
+            <a href="/account/login">Log In</a>
+        {% end %}
+    </nav>
+    {% for (kind, msg) in flash_messages %}
+    <aside class="flash flash--{{ kind }}">
+        {{ escape(msg) }}
+    </aside>
+    {% end %}
+    <main>
+        <form method="post" enctype="application/x-www-form-urlencoded" autocomplete="off">
+            {% block main %}TODO{% end %}
+        </form>
+    </main>
+</body>
+</html>

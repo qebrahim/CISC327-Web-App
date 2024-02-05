@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+{% block title %}Restaurants{% end %}
+
+{% block main %}
+    <header class="page page--restaurants">
+        <h1>Restaurants</h1>
+    </header>
+    <section class="restaurants">
+        {% for restaurant in restaurants %}
+            <a class="restaurant" href="/restaurants/{{ restaurant['RestaurantID'] }}" data-restaurantid="{{ restaurant['RestaurantID'] }}">{{ escape(restaurant['Name']) }}</a>
+        {% end %}
+        {% if user_info %}
+            <div class="new">
+                <label for="name">Add Restaurant</label>
+                <input type="text" class="name" id="name" name="name" placeholder="Name">
+                <input type="submit" value="Create">
+            </div>
+        {% end %}
+    </section>
+{% end %}
+

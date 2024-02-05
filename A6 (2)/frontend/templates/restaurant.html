@@ -1,0 +1,89 @@
+{% extends "_base.html" %}
+{% block title %}
+    {{ escape(restaurant['Name']) }}
+    {% if is_user_owner %} (owner){% end %}
+    {% if is_user_employee %} (employee){% end %}
+{% end %}
+
+{% block main %}
+    <header class="page page--restaurant">
+        <h1 class="name">{{ escape(restaurant['Name']) }}</h1>
+        <nav class="toolbar">
+            {% if is_user_owner %}
+                <input class="name" type="text" name="restaurant:name" value="{{ escape(restaurant['Name']) }}" onkeydown="if (event.keyCode == 13) { document.querySelector('[value=\'restaurant:update\']').click(); event.preventDefault() }">
+                <button class="update" name="action" value="restaurant:update">Rename</button>
+                <span class="spacer"></span>
+                <button class="delete" name="action" value="restaurant:delete">Delete Restaurant</button>
+            {% end %}
+            {% if user_info %}
+                <button class="order" name="action" value="restaurant:order">Create Order</button>
+            {% end %}
+        </nav>
+    </header>
+
+    {% if is_user_owner %}
+        <section class="employees">
+            <h2>Owner: Employees</h2>
+            {% for employee in employees %}
+                <div class="employee">
+                    <span class="username">{{ escape(employee) }}</span>
+                    <button name="action" value="employee:{{ escape(employee) }}:remove">Remove</button>
+                </div>
+            {% end %}
+            <div class="employee add">
+                <input class="username" type="text" name="employee:new:username" onkeydown="if (event.keyCode == 13) { document.querySelector('[value=\'employee:new:add\']').click(); event.preventDefault() }">
+                <button name="action" value="employee:new:add">Add</button>
+            </div>
+        </section>
+    {% end %}
+
+    <section class="menu">
+        <h2>Menu</h2>
+        {% for item in menu_items %}
+            <div class="item">
+                {% if is_user_owner %}
+                    <input class="name" type="text" name="item:{{ item['ItemID'] }}:name" value="{{ escape(item['Name']) }}" placeholder="Item Name" onkeydown="if (event.keyCode == 13) { document.querySelector('[value=\'item:{{ item['ItemID'] }}:update\']').click(); event.preventDefault() }">
+                {% else %}
+                    <span class="name">{{ escape(item['Name']) }}</span>
+                {% end %}
+                {% if is_user_owner %}
+                    <input class="price" type="text" name="item:{{ item['ItemID'] }}:price" value="{{ '${:.2f}'.format(item['Price'] / 100) }}" placeholder="$0.00" onkeydown="if (event.keyCode == 13) { document.querySelector('[value=\'item:{{ item['ItemID'] }}:update\']').click(); event.preventDefault() }">
+                {% else %}
+                    <span class="price">{{ '${:.2f}'.format(item['Price'] / 100) }}</span>
+                {% end %}
+                {% if is_user_owner %}
+                    <button name="action" value="item:{{ item['ItemID'] }}:update">Save</button>
+                    <button name="action" value="item:{{ item['ItemID'] }}:delete">Delete</button>
+                {% end %}
+            </div>
+        {% end %}
+        {% if is_user_owner %}
+            <div class="item add">
+                <input class="name" type="text" name="item:new:name" placeholder="Item Name" onkeydown="if (event.keyCode == 13) { document.querySelector('[value=\'item:new:add\']').click(); event.preventDefault() }">
+                <input class="price" type="text" name="item:new:price" placeholder="$0.00" onkeydown="if (event.keyCode == 13) { document.querySelector('[value=\'item:new:add\']').click(); event.preventDefault() }">
+                <button name="action" value="item:new:add">Add</button>
+            </div>
+        {% end %}
+    </section>
+
+    {% if is_user_employee %}
+        <section class="orders">
+            <h2>Employee: Orders</h2>
+            {% for order in orders %}
+                <div class="order" data-orderid="{{ order['OrderID'] }}">
+                    <div class="id">Order #{{ order['OrderID'] }}</div>
+                    <div class="status">{{ order['Status'] }}</div>
+                    <div class="date">{{ order['Date'] }}</div>
+                    <div class="address">{{ escape(order['Address']) }}</div>
+                    {% if order['Status'] == 'PAID' %}
+                    <button name="action" value="order:{{ order['OrderID'] }}:accept">Accept</button>
+                    {% end %}
+                    {% if order['Status'] == 'ACCEPTED' %}
+                    <button name="action" value="order:{{ order['OrderID'] }}:deliver">Deliver</button>
+                    {% end %}
+                    <a class="details" href="/orders/{{ order['OrderID'] }}">Details</a>
+                </div>
+            {% end %}
+        </section>
+    {% end %}
+{% end %}

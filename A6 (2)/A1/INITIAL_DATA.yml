@@ -1,0 +1,143 @@
+# some notes:
+# - address and total price is stored in the order to prevent future changes from messing things up
+# - order total price is calculated at payment time
+
+Accounts:
+- Username: patrick
+  FirstName: Patrick
+  LastName: Gaskin
+  PasswordSHA256: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+  Address: 123 Main St, Kingston, Ontario, Canada A1B 2C3
+  CardNumber: 2222420000001113
+  CardExpiry: 08/26
+  CardCode: 123
+
+- Username: jeff
+  FirstName: Jeff
+  LastName: Li
+  PasswordSHA256: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+  Address: 234 Main St, Kingston, Ontario, Canada A1B 2C3
+  CardNumber: 2222420000001115
+  CardExpiry: 08/26
+  CardCode: 169
+
+- Username: qays
+  FirstName: Qays
+  LastName: Ebrahim
+  PasswordSHA256: 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8
+  Address: 567 Main St, Kingston, Ontario, Canada A1B 2C7
+  CardNumber: 5555555555554444
+  CardExpiry: 09/26
+  CardCode: 567
+
+Restaurants:
+- RestaurantID: 1
+  Owner: patrick
+  Name: My Restaurant
+  Deleted: false
+
+- RestaurantID: 2
+  Owner: patrick
+  Name: Your Restaurant
+  Deleted: false
+
+- RestaurantID: 3
+  Owner: jeff
+  Name: Test Restaurant
+  Deleted: true
+
+MenuItems:
+- ItemID: 1
+  RestaurantID: 1
+  Name: Coffee
+  Price: 1.20
+  Deleted: true
+
+- ItemID: 2
+  RestaurantID: 1
+  Name: Tea
+  Price: 1.20
+  Deleted: false
+
+- ItemID: 3
+  RestaurantID: 1
+  Name: Slushie
+  Price: 3.15
+  Deleted: true
+
+- ItemID: 4
+  RestaurantID: 1
+  Name: Pop
+  Price: 1.10
+  Deleted: false
+
+- ItemID: 5
+  RestaurantID: 1
+  Name: Water
+  Price: 1.00
+  Deleted: false
+
+- ItemID: 6
+  RestaurantID: 2
+  Name: Juice
+  Price: 1.10
+  Deleted: false
+
+- ItemID: 7
+  RestaurantID: 2
+  Name: Soup
+  Price: 3.5
+  Deleted: false
+
+RestaurantEmployees:
+- RestaurantID: 1
+  Username: qays
+
+- RestaurantID: 2
+  Username: jeff
+
+Orders:
+- OrderID: 1
+  Date: 2023-10-04T20:19:32
+  RestaurantID: 1
+  Username: jeff
+  Address: 123 Main St, Kingston, Ontario, Canada A1B 2C3
+  Total: 1.37
+  Status: ACCEPTED
+
+- OrderID: 2
+  Date: 2023-10-04T20:19:32
+  RestaurantID: 1
+  Username: patrick
+  Address: 123 Main St, Kingston, Ontario, Canada A1B 2C3
+  Total: 3.15
+  Status: PAID
+
+- OrderID: 3
+  Date: 2023-10-04T20:19:32
+  RestaurantID: 1
+  Username: qays
+  Address: ""
+  Total: 0
+  Status: PENDING
+
+OrderItems:
+- OrderID: 1
+  ItemID: 2
+  Quantity: 1
+
+- OrderID: 1
+  ItemID: 3
+  Quantity: 5
+
+- OrderID: 2
+  ItemID: 4
+  Quantity: 4
+
+- OrderID: 2
+  ItemID: 5
+  Quantity: 8
+
+- OrderID: 3
+  ItemID: 2
+  Quantity: 1
